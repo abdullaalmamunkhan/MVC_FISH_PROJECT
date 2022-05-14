@@ -1,0 +1,8 @@
+/.vs
+/packages
+/Web/bin
+/Web/obj
+/Services/bin
+/Services/obj
+/Services/*.user
+/Web/*.user

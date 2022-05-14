@@ -1,0 +1,654 @@
+﻿@using Services.Domain.SPModels
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+
+<div class="page-content-wrapper dashboar-responsive">
+    <div class="page-content">
+
+
+        @*-------------------UserDashboard: Page Content Start---------------------------*@
+        <div class="page-title">
+
+            <div class="alert alert-dismissable alert-worning-msg" id="TrialExpiredMessage"><strong></strong>Your trial has expired. Please log in and upgrade your account to a paid version to continue using RAMs App.</div>
+            <div class="alert alert-dismissable alert-worning-msg" id="paidExpiredMessage"><strong></strong>Your account has expired. Please log in and update your payment details to continue using RAMs App.</div>
+
+            <span class="responsive-time-hide">Welcome To Chabang Fisharies</span>
+        </div>
+        <div class="page-bar wow fadeInUp animated">
+            <ul class="page-breadcrumb">
+                <li> <em class="icon-home"></em> <a href="~/Dashboard"><span class="ln-english">Dashboard</span><span class="ln-bangla">Dashboard</span></a> <em class="fa fa-angle-right"></em> </li>
+                <li>
+                    <span><span class="ln-english">My Dashboard</span><span class="ln-bangla">My Dashboard</span></span>
+                </li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 cold-sm-4 wow fadeInUp animated">
+                <div class="portlet bg-flat-color-1 clearfix counter-box">
+                    <div class="pull-left">
+                        <span class="counter-label">মাছ বিক্রি</span>
+                        <div class="counter counter-text" data-count="@ViewBag.TotalFishSell">0</div>
+                    </div>
+                    <div class="pull-right counter-icon"> <span class="icon-basket"></span></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 cold-sm-4 wow fadeInUp animated">
+                <div class="portlet bg-flat-color-2 clearfix counter-box">
+                    <div class="pull-left">
+                        <span class="counter-label">খাদ্য ক্রয়</span>
+                        <div class="counter counter-text" data-count="@ViewBag.TotalFeedBuy">0</div>
+                    </div>
+                    <div class="pull-right counter-icon"> <span class="icon-basket-loaded"></span></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 cold-sm-4 wow fadeInUp animated">
+                <div class="portlet bg-flat-color-3 clearfix counter-box">
+                    <div class="pull-left">
+                        <span class="counter-label">খাবার খাওয়ানো</span>
+                        <div class="counter counter-text" data-count="@ViewBag.TotalFeedDistribute">0</div>
+                    </div>
+                    <div class="pull-right counter-icon"> <span class="fa fa-hourglass-o"></span></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 cold-sm-4 wow fadeInUp animated">
+                <div class="portlet bg-flat-color-4 clearfix counter-box">
+                    <div class="pull-left">
+                        <span class="counter-label">মাছ বিক্রি</span>
+                        <div class="counter counter-text" data-count="@ViewBag.TotalRecord">0</div>
+                    </div>
+                    <div class="pull-right counter-icon"> <span class="icon-basket"></span></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="portlet light clearfix">
+                    <div class="col-sm-6 no-padding">
+                        <div id="divFishReportByDate"></div>
+                    </div>
+
+                    <div class="col-sm-6 no-padding">
+                        <div id="divIdFishSellingReport"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row" style="margin-top: 25px;">
+            <div class="col-lg-12 ">
+                <div class="portlet light clearfix wow fadeInUp animated">
+                    <div class="col-sm-12 wow fadeInUp animated">
+                        <div class="form-group col-sm-12 no-padding">
+                            <label class="control-label col-md-12 no-padding">
+                                <span class="ln-bangla">Feed purchase by project</span>
+                            </label>
+                            @(Html.Kendo().ComboBox()
+                            .Name("projectComboBox")
+                            .DataTextField("Name")
+                            .DataValueField("ID")
+                            .Placeholder("Choose one item")
+                            .HtmlAttributes(new { style = "width: 30%;", id = "txtCmbFilterPurchaseFeedAreaList" })
+                            .DataSource(source =>
+                            {
+                                source.Read(read =>
+                                {
+                                    read.Action("GetAllAreaList", "CreateSegment");
+                                });
+                            })
+                            )
+                            <div class="col-sm-10 col-xs-10 no-padding" style="margin-top:10px !important;">
+                                <strong class="income-expenditure">Feed: <span class="dummy_totalKG">0.00 K.G</span></strong>
+                                <strong class="income-expenditure">Price: <span class="dummy_totalSellPrice">0.00 Taka</span></strong>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-7 no-padding">
+                            <div id="divFeedPurchaseData"></div>
+                        </div>
+                        <div class="form-group col-sm-5 no-padding">
+                            <div id="divFeedPurchaseChart"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 wow fadeInUp animated">
+                        <div class="input-group" style="width: 100%">
+                            <div class="form-group col-sm-6 col-md-2 col-xs-6 col-xxs-12 xs-nopadding-left">
+                                <label class="control-label col-md-12 no-padding">
+                                    <span class="ln-bangla">Feed distrbute by project</span>
+                                </label>
+                                @(Html.Kendo().ComboBox()
+                            .Name("projectComboBox")
+                            .DataTextField("Name")
+                            .DataValueField("ID")
+                            .Placeholder("Choose one item")
+                            .HtmlAttributes(new { style = "width: 100%;", id = "txtCmbFilterDistributeFeedAreaList" })
+                            .DataSource(source =>
+                            {
+                                source.Read(read =>
+                                {
+                                    read.Action("GetAllAreaList", "CreateSegment");
+                                });
+                            })
+                                )
+
+                            </div>
+                            <div class="form-group col-sm-6 col-md-2 col-xs-6 col-xxs-12 xs-nopadding-left">
+                                <label class="control-label col-md-12 no-padding">
+                                    <span class="ln-bangla">Ponds</span>
+                                </label>
+                                <input type="text" id="txtCmbProjectsForSearchByAreaId" style="width: 100%;" />
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-7 no-padding">
+                            <div id="divFeedDistributeData"></div>
+                        </div>
+                        <div class="form-group col-sm-5 no-padding">
+                            <div id="divFeedDistPieChart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var feedPurchaseFilterCombo;
+    var feedDistributeFilterCombo;
+    var fltAreaId = 0;
+    var filterProjectListComboBox;
+    function LoadProjectListForFilterAreaId(fltAreaId) {
+
+        $.get("/User/GetProjectListByAreaId", { areaID: fltAreaId }, function (data) {
+
+            var dataSourceGrid = new kendo.data.DataSource({
+                data: data,
+            });
+
+            $("#txtCmbProjectsForSearchByAreaId").kendoComboBox({
+                placeholder: "Choose one item",
+                dataTextField: "Name",
+                dataValueField: "ID",
+                filter: "contains",
+                autoBind: false,
+                dataSource: dataSourceGrid
+            });
+
+            filterProjectListComboBox = $("#txtCmbProjectsForSearchByAreaId").data("kendoComboBox");
+            filterProjectListComboBox.bind("change", function () {
+                if ((filterProjectListComboBox.selectedIndex === -1 && filterProjectListComboBox.value()) || filterProjectListComboBox.value() == "") {
+                    fltAreaId = filterAreaListComboBox.value();
+                    LoadFeedDistributeDataByAreaId(fltAreaId, '');
+                }
+                else {
+                    fltAreaId = filterAreaListComboBox.value();
+                    var fltprojectId = filterProjectListComboBox.value();
+                    LoadFeedDistributeDataByAreaId(fltAreaId, fltprojectId);
+
+                }
+            });
+
+        });
+
+    }
+
+
+    $(document).ready(function () {
+        $("#divMyDashboard").addClass("active");
+        $(".div-dashboard-project").css("display", "none");
+        $(".div-dashboard-coshh").css("display", "none");
+        LoadFeedPurchaseDataByAreaId("");
+        LoadFeedDistributeDataByAreaId("","");
+        LoadFishSellingReportOverview();
+        LoadFishSellingGroupByFishName();
+        LoadFishSellingReportOverview();
+        LoadFishSellingReportGroupByProject();
+        feedPurchaseFilterCombo = $("#txtCmbFilterPurchaseFeedAreaList").data("kendoComboBox");
+        feedDistributeFilterCombo = $("#txtCmbFilterDistributeFeedAreaList").data("kendoComboBox");
+
+        feedPurchaseFilterCombo.bind("change", function () {
+            if ((feedPurchaseFilterCombo.selectedIndex === -1 && feedPurchaseFilterCombo.value()) || feedPurchaseFilterCombo.value() == "") {
+                LoadFeedPurchaseDataByAreaId("");
+            }
+            else {
+                var aId = feedPurchaseFilterCombo.value();
+                LoadFeedPurchaseDataByAreaId(aId);
+            }
+        });
+
+        feedDistributeFilterCombo.bind("change", function () {
+            if ((feedDistributeFilterCombo.selectedIndex === -1 && feedDistributeFilterCombo.value()) || feedDistributeFilterCombo.value() == "") {
+                LoadFeedDistributeDataByAreaId("","");
+            }
+            else {
+                var aId = feedDistributeFilterCombo.value();
+                var fltAreaId = filterProjectListComboBox.value();
+                LoadFeedDistributeDataByAreaId(aId, fltAreaId);
+            }
+        });
+
+        LoadProjectListForFilterAreaId(fltAreaId);
+
+        filterAreaListComboBox = $("#txtCmbFilterDistributeFeedAreaList").data("kendoComboBox");
+        filterAreaListComboBox.bind("change", function () {
+            filterProjectListComboBox.value("");
+            if ((filterAreaListComboBox.selectedIndex === -1 && filterAreaListComboBox.value()) || filterAreaListComboBox.value() == "") {
+                fltAreaId = 0;
+                LoadProjectListForFilterAreaId(fltAreaId);
+            }
+            else {
+                fltAreaId = filterAreaListComboBox.value();
+                LoadProjectListForFilterAreaId(fltAreaId);
+                var fltprojectId = filterProjectListComboBox.value();
+                LoadFeedDistributeDataByAreaId(fltAreaId, fltprojectId);
+
+            }
+        });
+
+    
+
+    });
+
+    function LoadFishSellingReportGroupByProject() {
+
+        $.get("/Dashboard/GetAdminDashBoardFishSellingReport", function (data) {
+
+            $("#divIdFishSellingReport").kendoChart({
+                dataSource: {
+                    data: data,
+                    schema: {
+                        model:
+                      {
+                          id: "TotalSell"
+
+                      }
+                    }
+                },
+                title: {
+                    position: "bottom",
+                    text: "বিক্রয় পরিদর্শন",
+
+                },
+                legend: {
+                    visible: false
+                },
+                chartArea: {
+                    background: ""
+                },
+                seriesDefaults: {
+                    labels: {
+                        visible: true,
+                        background: "transparent",
+                        template: "#= category #: \n #= value# টাকা"
+                    }
+                },
+                series: [{
+                    type: "pie",
+                    field: "TotalSell",
+                    categoryField: "ProjectName",
+                    startAngle: 250,
+                    animation: {
+                        type: "fadeIn",
+                        duration: 800
+                    }
+
+                }],
+                tooltip: {
+                    visible: true,
+                    format: "N0",
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#"
+                }
+            });
+        });
+
+
+    }
+
+
+
+    function LoadFeedDistributeDataByAreaId(areaID, projectID) {     
+        $.get("/FeedDistribute/GetFeedDistributeReportByAreaId", { areaId: areaID,projectId:projectID }, function (data) {
+
+            var dataSourceGrid = new kendo.data.DataSource({
+                data: data,
+                schema: {
+                    model:
+                  {
+                      id: "FeedDistributionReportId"
+
+                  }
+                },
+                pageSize: 100
+            });
+
+            $("#divFeedDistributeData").empty();
+            var existingGrid = $('#divFeedDistributeData').data('kendoGrid');
+            if (typeof existingGrid !== "undefined") {
+                existingGrid.destroy();
+            }
+
+            $("#divFeedDistributeData").kendoGrid({
+                dataSource: dataSourceGrid,
+                height: 450,
+                reorderable: true,
+                resizable: true,
+                filterable: true,
+                columnMenu: true,
+                sortable: true,
+                scrollable: {
+                    virtual: true
+                },
+                selectable: "multiple cell",
+                allowCopy: true,
+                pageable: {
+                    refresh: true,
+                    numeric: true,
+                    previousNext: true
+                },
+                columns: [
+                 {
+                     field: "FeedDistributionDate",
+                     title: "Date",
+                 },
+                 {
+                     field: "ProjectName",
+                     title: "Project",
+                 },
+                 {
+                     field: "FeedNameWithCat",
+                     title: "Feed"
+                 },
+                 {
+                     field: "FeedDistributionQuantityId",
+                     title: "Feer #Sack",
+                     template: "#: FeedDistributionQuantityId # K.G"
+                 },
+                 {
+                     field: "FeedDistributionSakNumber",
+                     title: "Sack Amount",
+                     template: "#: FeedDistributionSakNumber #"
+                 },
+                 {
+                     field: "FeedDistributionTotalWeight",
+                     title: "Weight",
+                     template: "#: FeedDistributionTotalWeight # K.G"
+                 }
+                ],
+                selectable: true
+
+            });
+        });
+    }
+
+
+    function LoadFeedPurchaseDataByAreaId(areId) {
+
+        $.get("/SellOfFeed/FirstPageGetFeedPurchaseReportByAreaId", { areaId: areId }, function (data) {
+
+
+            if (data) {
+                if (data.TotalWeight) {
+                    $(".dummy_totalKG").text(data.TotalWeight + " K.G");
+                }
+                if (data.TotalPrice) {
+                    $(".dummy_totalSellPrice").text(data.TotalPrice + " Taka");
+                }
+            }
+        });
+
+
+        $.get("/SellOfFeed/GetFeedPurchaseReportByAreaId", { areaId: areId }, function (data) {
+
+            console.log(data);
+
+            var dataSourceGrid = new kendo.data.DataSource({
+                data: data,
+                schema: {
+                    model:
+                  {
+                      id: "FeedSellingReportId"
+
+                  }
+                },
+                pageSize: 100
+            });
+
+            $("#divFeedPurchaseData").empty();
+            var existingGrid = $('#divFeedPurchaseData').data('kendoGrid');
+            if (typeof existingGrid !== "undefined") {
+                existingGrid.destroy();
+            }
+
+            $("#divFeedPurchaseData").kendoGrid({
+                dataSource: dataSourceGrid,
+                height: 450,
+                reorderable: true,
+                resizable: true,
+                filterable: true,
+                columnMenu: true,
+                sortable: true,
+                scrollable: {
+                    virtual: true
+                },
+                selectable: "multiple cell",
+                allowCopy: true,
+                pageable: {
+                    refresh: true,
+                    numeric: true,
+                    previousNext: true
+                },
+                columns: [
+                 {
+                     field: "SellingFeedCalculationDate",
+                     title: "Date",
+                 },
+                 {
+                     field: "FeedNames",
+                     title: "Feed"
+                 },
+                 {
+                     field: "ProjectName",
+                     title: "Project",
+                 },
+                 
+                 {
+                     field: "SellingFeedTotalWeight",
+                     title: "Weight",
+                     template: "#: SellingFeedTotalWeight # K.G"
+                 },
+                 {
+                     field: "SellingFeedTotalPrice",
+                     title: "Price",
+                     template: "#: SellingFeedTotalPrice # Taka"
+                 }
+                ],
+                selectable: true
+
+            });
+
+            $("#divFeedPurchaseData .k-pager-refresh.k-link").click();
+        });
+    }
+
+    function LoadFishSellingGroupByFishName() {
+
+
+        $.get("/FeedDistribute/GetFeedDistributionPieChart", function (data) {
+
+            console.log(data);
+
+            $("#divFeedDistPieChart").kendoChart({
+                dataSource: {
+                    data: data
+                },
+                title: {
+                    position: "bottom",
+                    text: "Feed Distribute Chart",
+
+                },
+                legend: {
+                    visible: false
+                },
+                chartArea: {
+                    background: ""
+                },
+                seriesDefaults: {
+                    labels: {
+                        visible: true,
+                        background: "transparent",
+                        template: "#= category #: \n #= value# Ton"
+                    }
+                },
+                series: [{
+                    type: "pie",
+                    field: "TotalWeight",
+                    categoryField: "AreaName",
+                    startAngle: 250,
+                    animation: {
+                        type: "fadeIn",
+                        duration: 800
+                    }
+
+                }],
+                tooltip: {
+                    visible: true,
+                    format: "N0",
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#"
+                }
+            });
+
+        });
+
+
+        $.get("/FeedPurchase/GetFeedPurchasePieChart", function (data) {
+
+            $("#divFeedPurchaseChart").kendoChart({
+                dataSource: {
+                    data: data
+                },
+                title: {
+                    position: "bottom",
+                    text: "Feed Purchase Chart",
+
+                },
+                legend: {
+                    visible: false
+                },
+                chartArea: {
+                    background: ""
+                },
+                seriesDefaults: {
+                    labels: {
+                        visible: true,
+                        background: "transparent",
+                        template: "#= category #: \n #= value# Ton"
+                    }
+                },
+                series: [{
+                    type: "pie",
+                    field: "TotalWeight",
+                    categoryField: "AreaName",
+                    startAngle: 250,
+                    animation: {
+                        type: "fadeIn",
+                        duration: 800
+                    }
+
+                }],
+                tooltip: {
+                    visible: true,
+                    format: "N0",
+                    template: "#= category # - #= kendo.format('{0:P}', percentage)#"
+                }
+            });
+        });
+
+        
+
+    }
+
+
+    
+    function LoadFishSellingReportOverview() {
+
+        $.get("/SellOfFish/GetFishSellingChartReportForAdmin", function (data) {
+
+            $("#divFishReportByDate").kendoChart({
+                dataSource: {
+                    data: data.Data
+                },
+                title: {
+                    text: "প্রতিদিনের মাছ বিক্রয়"
+                },
+                legend: {
+                    position: "top"
+                },
+                seriesDefaults: {
+                    type: "column"
+                },
+                series:
+                [{
+                    field: "TotalSellPrice",
+                    categoryField: "CalculatedDate"
+                }],
+                categoryAxis: {
+                    labels: {
+                        rotation: -45
+                    },
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                valueAxis: {
+                    labels: {
+                        format: "N0",
+                    },
+                    majorUnit: 70000,
+                    line: {
+                        visible: false
+                    }
+                },
+                tooltip: {
+                    visible: true,
+                    format: "N0"
+                }
+            });
+        });
+
+
+    }
+
+
+    function KendoGridDataBound(arg) {
+        var count = $('#grid').data('kendoGrid').dataSource.total();
+
+        if (count == 0) {
+            $(".dummy_Coshh_no_found").show().fadeOut(5000);
+        } else {
+            $(".dummy_Coshh_no_found").hide();
+        }
+
+    }
+
+
+    function SearchDataFromExternalInput() {
+
+        return {
+            searchText: $.trim($("#txtSearchString").val())
+        };
+
+    }
+
+    function DecodehtmlDecode(value) {
+        return $('<div/>').html(value).text();
+    }
+
+
+
+</script>
