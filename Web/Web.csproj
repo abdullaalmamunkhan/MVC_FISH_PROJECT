@@ -1671,8 +1671,7 @@
     <Content Include="lib\kendo-ui\styles\kendo-grid\images\kendoui.woff" />
     <Content Include="lib\kendo-ui\styles\kendo.bootstrap.min.css.map" />
     <Content Include="lib\kendo-ui\styles\kendo.mobile.all.min.css.map" />
-    <None Include="Properties\PublishProfiles\fisheries.pubxml" />
-    <None Include="Properties\PublishProfiles\Update.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\checkout.js" />
     <Content Include="Scripts\EmailFormatValidation.js" />
